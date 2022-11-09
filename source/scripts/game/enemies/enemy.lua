@@ -4,11 +4,11 @@ import "scripts/game/player/racquet"
 local pd <const> = playdate
 local gfx <const> = playdate.graphics
 
-class('Player').extends(AnimatedSprite)
+class('Enemy').extends(AnimatedSprite)
 
-function Player:init(x, y)
-    local playerSpriteSheet = gfx.imagetable.new("images/player/player-table-32-34")
-    Player.super.init(self, playerSpriteSheet)
+function Enemy:init(x, y)
+    local enemySpriteSheet = gfx.imagetable.new("images/player/player-table-32-34")
+    Enemy.super.init(self, enemySpriteSheet)
     self:addState("idle", 1, 4, {tickStep = 4})
     self:addState("run", 5, 8, {tickStep = 4})
 
@@ -25,7 +25,7 @@ function Player:init(x, y)
     self:moveTo(x, y)
 
     self.racquetOffset = 0
-    self.racquet = Racquet(x + self.racquetOffset, y - 10, self)
+    self.racquet = Racquet(x + self.racquetOffset, y + 10, self, true)
 
     self.leftWall = LEFT_WALL
     self.rightWall = RIGHT_WALL
@@ -33,7 +33,7 @@ function Player:init(x, y)
     self:setZIndex(10)
 end
 
-function Player:update()
+function Enemy:update()
     if pd.buttonIsPressed(pd.kButtonLeft) then
         self:changeState("run")
         if self.velocity >= 0 then
@@ -65,7 +65,7 @@ function Player:update()
         end
     end
 
-    if pd.buttonJustPressed(pd.kButtonA) then
+    if pd.buttonJustPressed(pd.kButtonB) then
         self.racquet:swing()
     end
 

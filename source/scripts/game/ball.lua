@@ -33,9 +33,12 @@ function Ball:collisionResponse(other)
      end
 end
 
-function Ball:hit(hitX, hitY)
+function Ball:hit(hitX, hitY, isEnemy)
     local angleCos = (self.x - hitX) / (math.sqrt((self.x - hitX)^2 + (self.y - hitY)^2))
     local angleSin = math.sin(math.acos(angleCos))
+    if isEnemy then
+        angleSin *= -1
+    end
     self.xVelocity = angleCos * self.velocity
     self.yVelocity = -angleSin * self.velocity
     if math.abs(self.yVelocity) < 0.5 then

@@ -1,4 +1,5 @@
 import "scripts/game/player/player"
+import "scripts/game/enemies/enemy"
 import "scripts/game/wall"
 import "scripts/game/ball"
 import "libraries/Fluid"
@@ -45,6 +46,7 @@ function GameScene:init()
     end
 
     Player(200, 220)
+    Enemy(200, 20)
     Wall(52, 0, 10, 240)
     Wall(338, 0, 10, 240)
     Wall(10, -10, 380, 10)

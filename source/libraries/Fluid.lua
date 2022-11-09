@@ -1,3 +1,5 @@
+-- Written by Dustin Mierau: https://devforum.play.date/t/a-list-of-helpful-libraries-and-code/221/13
+
 import "CoreLibs/graphics"
 
 local graphics = playdate.graphics
