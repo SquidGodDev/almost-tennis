@@ -36,6 +36,9 @@ function Ball:hit(hitX, hitY)
     print("Sine" ..  angleSin)
     self.xVelocity = angleCos * self.velocity
     self.yVelocity = -angleSin * self.velocity
+    if math.abs(self.yVelocity) < 0.5 then
+        self.yVelocity = -0.5
+    end
 end
 
 function Ball:update()
