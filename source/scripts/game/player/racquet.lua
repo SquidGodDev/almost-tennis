@@ -18,7 +18,7 @@ function Racquet:init(x, y, entity)
         if self:getCurrentFrameIndex() == swingFrame then
             local xOffset, yOffset = -64, -47
             local hitboxWidth, hitboxHeight = 127, 60
-            Hitbox(self.x + xOffset, self.y + yOffset, hitboxWidth, hitboxHeight, self.entity.x, self.entity.y)
+            Hitbox(self.x + xOffset, self.y + yOffset, hitboxWidth, hitboxHeight, self.entity)
         end
     end
 

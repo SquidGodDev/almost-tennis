@@ -4,14 +4,13 @@ local gfx <const> = playdate.graphics
 
 class('Hitbox').extends(gfx.sprite)
 
-function Hitbox:init(x, y, width, height, sourceX, sourceY)
+function Hitbox:init(x, y, width, height, sourceEntity)
     self:setCollideRect(0, 0, width, height)
     self.collisionResponse = gfx.sprite.kCollisionTypeOverlap
     self:setCenter(0, 0)
     self:moveTo(x, y)
 
-    self.sourceX = sourceX
-    self.sourceY = sourceY
+    self.sourceEntity = sourceEntity
 
     pd.timer.new(100, function()
         self:remove()
@@ -29,7 +28,7 @@ function Hitbox:update()
             local curSprite = overlappingSprites[i]
             if curSprite:getTag() == BALL_TAG then
                 self.hit = true
-                curSprite:hit(self.sourceX, self.sourceY)
+                curSprite:hit(self.sourceEntity.x, self.sourceEntity.y)
             end
         end
     end
