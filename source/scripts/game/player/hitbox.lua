@@ -29,10 +29,7 @@ function Hitbox:update()
             local curSprite = overlappingSprites[i]
             if curSprite:getTag() == BALL_TAG then
                 self.hit = true
-                curSprite:hit(self.x, self.y)
-                if self:alphaCollision(curSprite) then
-                    print("alphaCollision!")
-                end
+                curSprite:hit(self.sourceX, self.sourceY)
             end
         end
     end
