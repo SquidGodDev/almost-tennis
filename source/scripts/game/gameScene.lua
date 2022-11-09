@@ -45,13 +45,13 @@ function GameScene:init()
         self:setImage(fluidImage)
     end
 
+    local ball = Ball(200, 120, fluid)
     Player(200, 220)
-    Enemy(200, 20)
+    Enemy(200, 20, ball)
     Wall(52, 0, 10, 240)
     Wall(338, 0, 10, 240)
     Wall(10, -10, 380, 10)
     Wall(10, 240, 380, 10)
-    Ball(200, 120, fluid)
 
     self:add()
 end

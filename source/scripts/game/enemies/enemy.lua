@@ -4,9 +4,17 @@ import "scripts/game/player/racquet"
 local pd <const> = playdate
 local gfx <const> = playdate.graphics
 
+local DIRECTION = {
+    LEFT = -1,
+    RIGHT = 1,
+    IDLE = 0
+}
+
 class('Enemy').extends(AnimatedSprite)
 
-function Enemy:init(x, y)
+function Enemy:init(x, y, ball)
+    self.ball = ball
+
     local enemySpriteSheet = gfx.imagetable.new("images/player/player-table-32-34")
     Enemy.super.init(self, enemySpriteSheet)
     self:addState("idle", 1, 4, {tickStep = 4})
@@ -16,16 +24,21 @@ function Enemy:init(x, y)
 
     self.velocity = 0
     self.startVelocity = 1
-    self.maxVelocity = 3
     self.acceleration = 0.3
     self.friction = 0.3
-
     self.idleVelocity = 0.3
+
+    -- Adjustable Attributes
+    self.maxVelocity = 3
+    self.hitRange = 60
+    self.hitRangeX = 65
+    self.hitRangeY = 60
+    -- Hit cooldown
+    -- Hit velocity
 
     self:moveTo(x, y)
 
-    self.racquetOffset = 0
-    self.racquet = Racquet(x + self.racquetOffset, y + 10, self, true)
+    self.racquet = Racquet(x, y + 10, self, true)
 
     self.leftWall = LEFT_WALL
     self.rightWall = RIGHT_WALL
@@ -34,7 +47,14 @@ function Enemy:init(x, y)
 end
 
 function Enemy:update()
-    if pd.buttonIsPressed(pd.kButtonLeft) then
+    local moveDirection = DIRECTION.IDLE
+    if self.ball.x < self.x then
+        moveDirection = DIRECTION.LEFT
+    elseif self.ball.x > self.x then
+        moveDirection = DIRECTION.RIGHT
+    end
+
+    if moveDirection == DIRECTION.LEFT then
         self:changeState("run")
         if self.velocity >= 0 then
             self.velocity = -self.startVelocity
@@ -44,7 +64,7 @@ function Enemy:update()
                 self.velocity = -self.maxVelocity
             end
         end
-    elseif pd.buttonIsPressed(pd.kButtonRight) then
+    elseif moveDirection == DIRECTION.RIGHT then
         self:changeState("run")
         if self.velocity <= 0 then
             self.velocity = self.startVelocity
@@ -65,7 +85,8 @@ function Enemy:update()
         end
     end
 
-    if pd.buttonJustPressed(pd.kButtonB) then
+    -- if self:distanceToBall() <= self.hitRange then
+    if self:ballInHitRange() then
         self.racquet:swing()
     end
 
@@ -73,11 +94,11 @@ function Enemy:update()
         if self.velocity < 0 then
             self.globalFlip = 1
             self.racquet:flip(1)
-            self.racquet:moveTo(self.x - self.racquetOffset, self.racquet.y)
+            self.racquet:moveTo(self.x, self.racquet.y)
         elseif self.velocity > 0 then
             self.globalFlip = 0
             self.racquet:flip(0)
-            self.racquet:moveTo(self.x + self.racquetOffset, self.racquet.y)
+            self.racquet:moveTo(self.x, self.racquet.y)
         end
     end
 
@@ -89,4 +110,14 @@ function Enemy:update()
         self.racquet:moveBy(self.velocity, 0)
     end
     self:updateAnimation()
+end
+
+function Enemy:distanceToBall()
+    return math.sqrt((self.x - self.ball.x)^2 + (self.y - self.ball.y)^2)
+end
+
+function Enemy:ballInHitRange()
+    local xDist = math.abs(self.x - self.ball.x)
+    local yDist = math.abs(self.y - self.ball.y)
+    return xDist <= self.hitRangeX and yDist <= self.hitRangeY
 end
