@@ -23,6 +23,8 @@ function Ball:init(x, y, fluid)
     self:setTag(BALL_TAG)
 
     self.crossedNet = false
+
+    self.active = true
 end
 
 function Ball:collisionResponse(other)
@@ -34,6 +36,10 @@ function Ball:collisionResponse(other)
 end
 
 function Ball:hit(hitX, hitY, isEnemy)
+    if not self.active then
+        return
+    end
+
     local angleCos = (self.x - hitX) / (math.sqrt((self.x - hitX)^2 + (self.y - hitY)^2))
     local angleSin = math.sin(math.acos(angleCos))
     if isEnemy then
@@ -47,6 +53,10 @@ function Ball:hit(hitX, hitY, isEnemy)
 end
 
 function Ball:update()
+    if not self.active then
+        return
+    end
+
     local _, _, collisions, length = self:moveWithCollisions(self.x + self.xVelocity, self.y + self.yVelocity)
     local bounce = false
     local bounceNormal = {x = 0, y = 0}
@@ -77,4 +87,43 @@ function Ball:update()
     else
         self.crossedNet = false
     end
+
+    if self.y <= 0 then
+        self:ballScored(false)
+    elseif self.y >= 240 then
+        self:ballScored(true)
+    end
+end
+
+function Ball:ballScored(playerScore)
+    self.active = false
+    self:setVisible(false)
+    self.xVelocity = 0
+    self.yVelocity = 0
+    -- Screen Shake here
+    -- Set off animation chain (blink, move To, and then set active)
+    local blinkTime = 300
+    pd.timer.new(1000, function()
+        self:setVisible(true)
+        local randomX = math.random(LEFT_WALL + 10, RIGHT_WALL - 10)
+        local ySpawnOffset = 60
+        if playerScore then
+            self:moveTo(randomX, 240 - ySpawnOffset)
+        else
+            self:moveTo(randomX, ySpawnOffset)
+        end
+        pd.timer.new(blinkTime, function()
+            self:setVisible(false)
+            pd.timer.new(blinkTime, function()
+                self:setVisible(true)
+                pd.timer.new(blinkTime, function()
+                    self:setVisible(false)
+                    pd.timer.new(blinkTime, function()
+                        self:setVisible(true)
+                        self.active = true
+                    end)
+                end)
+            end)
+        end)
+    end)
 end

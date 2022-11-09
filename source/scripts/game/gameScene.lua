@@ -50,8 +50,8 @@ function GameScene:init()
     Enemy(200, 20, ball)
     Wall(52, 0, 10, 240)
     Wall(338, 0, 10, 240)
-    Wall(10, -10, 380, 10)
-    Wall(10, 240, 380, 10)
+    -- Wall(10, -10, 380, 10)
+    -- Wall(10, 240, 380, 10)
 
     self:add()
 end

@@ -28,6 +28,8 @@ function Enemy:init(x, y, ball)
     self.friction = 0.3
     self.idleVelocity = 0.3
 
+    self.idleBuffer = 2
+
     -- Adjustable Attributes
     self.maxVelocity = 3
     self.hitRange = 60
@@ -48,10 +50,12 @@ end
 
 function Enemy:update()
     local moveDirection = DIRECTION.IDLE
-    if self.ball.x < self.x then
-        moveDirection = DIRECTION.LEFT
-    elseif self.ball.x > self.x then
-        moveDirection = DIRECTION.RIGHT
+    if self.ball.active then
+        if self.ball.x < self.x - self.idleBuffer then
+            moveDirection = DIRECTION.LEFT
+        elseif self.ball.x > self.x + self.idleBuffer then
+            moveDirection = DIRECTION.RIGHT
+        end
     end
 
     if moveDirection == DIRECTION.LEFT then
@@ -86,7 +90,7 @@ function Enemy:update()
     end
 
     -- if self:distanceToBall() <= self.hitRange then
-    if self:ballInHitRange() then
+    if self:ballInHitRange() and self.ball.active then
         self.racquet:swing()
     end
 
