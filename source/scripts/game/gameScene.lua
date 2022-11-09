@@ -1,6 +1,7 @@
 import "scripts/game/player/player"
 import "scripts/game/wall"
 import "scripts/game/ball"
+import "libraries/Fluid"
 
 local pd <const> = playdate
 local gfx <const> = playdate.graphics
@@ -21,12 +22,34 @@ function GameScene:init()
     wallSprite:setZIndex(100)
     wallSprite:add()
 
+    local fluidWidth, fluidHeight = 276, 40
+    local fluidOptions = {
+        tension = 0.35,
+        dampening = 0.005
+    }
+    local fluid = Fluid.new(0, 20, fluidWidth, fluidHeight, fluidOptions)
+    local fluidSprite = gfx.sprite.new()
+    fluidSprite:setSize(fluidWidth, 40)
+    fluidSprite:setCenter(0, 0)
+    fluidSprite:moveTo(62, 100)
+    fluidSprite:add()
+    function fluidSprite:update()
+        fluid:update()
+        local fluidImage = gfx.image.new(fluidWidth, 40)
+        gfx.pushContext(fluidImage)
+            gfx.setLineWidth(2)
+            gfx.setColor(gfx.kColorWhite)
+            fluid:draw()
+        gfx.popContext()
+        self:setImage(fluidImage)
+    end
+
     Player(200, 220)
     Wall(52, 0, 10, 240)
     Wall(338, 0, 10, 240)
     Wall(10, -10, 380, 10)
     Wall(10, 240, 380, 10)
-    Ball(200, 120)
+    Ball(200, 120, fluid)
 
     self:add()
 end

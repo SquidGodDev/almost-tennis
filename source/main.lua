@@ -10,10 +10,13 @@ local pd <const> = playdate
 local gfx <const> = playdate.graphics
 
 BALL_TAG = 20
+LEFT_WALL = 62
+RIGHT_WALL = 337
 
 GameScene()
 
 function pd.update()
     gfx.sprite.update()
     pd.timer.updateTimers()
+    pd.drawFPS(5, 5)
 end

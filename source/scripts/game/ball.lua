@@ -5,7 +5,9 @@ local gfx <const> = playdate.graphics
 
 class('Ball').extends(gfx.sprite)
 
-function Ball:init(x, y)
+function Ball:init(x, y, fluid)
+    self.fluid = fluid
+
     self.velocity = 8
 
     self.xVelocity = 4
@@ -19,6 +21,8 @@ function Ball:init(x, y)
     self:add()
 
     self:setTag(BALL_TAG)
+
+    self.crossedNet = false
 end
 
 function Ball:collisionResponse(other)
@@ -32,8 +36,6 @@ end
 function Ball:hit(hitX, hitY)
     local angleCos = (self.x - hitX) / (math.sqrt((self.x - hitX)^2 + (self.y - hitY)^2))
     local angleSin = math.sin(math.acos(angleCos))
-    print("Cosine" ..  angleCos)
-    print("Sine" ..  angleSin)
     self.xVelocity = angleCos * self.velocity
     self.yVelocity = -angleSin * self.velocity
     if math.abs(self.yVelocity) < 0.5 then
@@ -64,5 +66,12 @@ function Ball:update()
         if bounceNormal.y ~= 0 then
             self.yVelocity *= -1
         end
+    end
+
+    if math.abs(self.y - 120) <= 5 and not self.crossedNet then
+        self.crossedNet = true
+        self.fluid:touch(self.x - 62, self.yVelocity)
+    else
+        self.crossedNet = false
     end
 end

@@ -31,7 +31,7 @@ function Fluid.new(x, y, width, height, options)
 	
 	-- Allocate polygon.
 	fluid.polygon = geometry.polygon.new(fluid.vertex_count + 2)
-	fluid.polygon:setClosed(true)
+	fluid.polygon:close()
 	
 	-- Set bounds.
 	fluid:setBounds(x, y, width, height)

@@ -27,6 +27,9 @@ function Player:init(x, y)
     self.racquetOffset = 0
     self.racquet = Racquet(x + self.racquetOffset, y - 10, self)
 
+    self.leftWall = LEFT_WALL
+    self.rightWall = RIGHT_WALL
+
     self:setZIndex(10)
 end
 
@@ -88,7 +91,12 @@ function Player:update()
         end
     end
 
-    self:moveBy(self.velocity, 0)
-    self.racquet:moveBy(self.velocity, 0)
+    local wallBuffer = 10
+    local passingLeftWall = self.velocity < 0 and self.x <= self.leftWall + wallBuffer
+    local passingRightWall = self.velocity > 0 and self.x >= self.rightWall - wallBuffer
+    if not passingLeftWall and not passingRightWall then
+        self:moveBy(self.velocity, 0)
+        self.racquet:moveBy(self.velocity, 0)
+    end
     self:updateAnimation()
 end
