@@ -43,6 +43,7 @@ function SceneManager:cleanupScene()
     gfx.sprite.removeAll()
     self:removeAllTimers()
     gfx.setDrawOffset(0, 0)
+    SIGNAL_MANAGER:clear()
 end
 
 function SceneManager:startTransition()

@@ -1,5 +1,6 @@
 import "libraries/AnimatedSprite"
 import "scripts/game/player/racquet"
+import "scripts/game/healthbar/healthbar"
 
 local pd <const> = playdate
 local gfx <const> = playdate.graphics
@@ -13,12 +14,14 @@ local DIRECTION = {
 class('Enemy').extends(AnimatedSprite)
 
 function Enemy:init(x, y, ball)
+    self.healthbar = HealthBar(4, true)
     self.ball = ball
 
     local enemySpriteSheet = gfx.imagetable.new("images/player/player-table-32-34")
     Enemy.super.init(self, enemySpriteSheet)
     self:addState("idle", 1, 4, {tickStep = 4})
     self:addState("run", 5, 8, {tickStep = 4})
+    self:addState("death", 9, 15, {tickStep = 4, loop = false})
 
     self:playAnimation()
 
@@ -49,6 +52,10 @@ function Enemy:init(x, y, ball)
 end
 
 function Enemy:update()
+    if self.currentState == "death" then
+        return
+    end
+
     local moveDirection = DIRECTION.IDLE
     if self.ball.active then
         if self.ball.x < self.x - self.idleBuffer then
@@ -89,7 +96,6 @@ function Enemy:update()
         end
     end
 
-    -- if self:distanceToBall() <= self.hitRange then
     if self:ballInHitRange() and self.ball.active then
         self.racquet:swing()
     end
@@ -114,6 +120,10 @@ function Enemy:update()
         self.racquet:moveBy(self.velocity, 0)
     end
     self:updateAnimation()
+end
+
+function Enemy:damage()
+    self.healthbar:damage()
 end
 
 function Enemy:distanceToBall()

@@ -107,8 +107,10 @@ function Ball:ballScored(playerScored)
     self:screenShake()
     if playerScored then
         ScoreBurst(self.x, self.y + 2)
+        SIGNAL_MANAGER:notify("damageEnemy")
     else
         ScoreBurst(self.x, self.y - 5)
+        SIGNAL_MANAGER:notify("damagePlayer")
     end
     pd.timer.new(1000, function()
         self:setVisible(true)

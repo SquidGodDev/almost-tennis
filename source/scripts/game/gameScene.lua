@@ -47,14 +47,22 @@ function GameScene:init()
     end
 
     local ball = Ball(200, 120, fluid)
-    Player(200, 220)
-    Enemy(200, 20, ball)
+    local player = Player(200, 220)
+    local enemy = Enemy(200, 20, ball)
     Wall(52, 0, 10, 240)
     Wall(338, 0, 10, 240)
     -- Wall(10, -10, 380, 10)
     -- Wall(10, 240, 380, 10)
 
     self:add()
+
+    SIGNAL_MANAGER:subscribe("damagePlayer", self, function()
+        player:damage()
+    end)
+
+    SIGNAL_MANAGER:subscribe("damageEnemy", self, function()
+        enemy:damage()
+    end)
 end
 
 function GameScene:update()

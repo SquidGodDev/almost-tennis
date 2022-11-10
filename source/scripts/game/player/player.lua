@@ -1,5 +1,6 @@
 import "libraries/AnimatedSprite"
 import "scripts/game/player/racquet"
+import "scripts/game/healthbar/healthbar"
 
 local pd <const> = playdate
 local gfx <const> = playdate.graphics
@@ -7,10 +8,12 @@ local gfx <const> = playdate.graphics
 class('Player').extends(AnimatedSprite)
 
 function Player:init(x, y)
+    self.healthbar = HealthBar(8, false)
     local playerSpriteSheet = gfx.imagetable.new("images/player/player-table-32-34")
     Player.super.init(self, playerSpriteSheet)
     self:addState("idle", 1, 4, {tickStep = 4})
     self:addState("run", 5, 8, {tickStep = 4})
+    self:addState("death", 9, 15, {tickStep = 4, loop = false})
 
     self:playAnimation()
 
@@ -34,6 +37,10 @@ function Player:init(x, y)
 end
 
 function Player:update()
+    if self.currentState == "death" then
+        return
+    end
+
     if pd.buttonIsPressed(pd.kButtonLeft) then
         self:changeState("run")
         if self.velocity >= 0 then
@@ -89,4 +96,8 @@ function Player:update()
         self.racquet:moveBy(self.velocity, 0)
     end
     self:updateAnimation()
+end
+
+function Player:damage()
+    self.healthbar:damage()
 end

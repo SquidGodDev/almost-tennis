@@ -5,7 +5,7 @@ import "CoreLibs/sprites"
 import "CoreLibs/timer"
 import "CoreLibs/animation"
 
-import "scripts/game/gameScene"
+import "libraries/Signal"
 
 local pd <const> = playdate
 local gfx <const> = playdate.graphics
@@ -15,6 +15,10 @@ math.randomseed(pd.getSecondsSinceEpoch())
 BALL_TAG = 20
 LEFT_WALL = 62
 RIGHT_WALL = 337
+
+SIGNAL_MANAGER = Signal()
+
+import "scripts/game/gameScene"
 
 GameScene()
 
