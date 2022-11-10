@@ -10,6 +10,7 @@ local gfx <const> = playdate.graphics
 class('GameScene').extends(gfx.sprite)
 
 function GameScene:init()
+    gfx.setBackgroundColor(gfx.kColorBlack)
     local backgroundImage = gfx.image.new("images/game/background")
     gfx.sprite.setBackgroundDrawingCallback(
         function()

@@ -20,7 +20,7 @@ function Racquet:init(x, y, entity, isEnemy)
     self:addState("idle", 1, 120, {tickStep = 1, flip = self.flipped})
     self:addState("swing", 121, 144, {tickStep = 1, nextAnimation = "idle", flip = self.flipped})
 
-    local swingFrame = 121
+    local swingFrame = 122
     self.states["swing"].onFrameChangedEvent = function()
         if self:getCurrentFrameIndex() == swingFrame then
             local xOffset, yOffset = -64, -47

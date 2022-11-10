@@ -1,4 +1,5 @@
 import "scripts/game/wall"
+import "scripts/game/scoreBurst"
 
 local pd <const> = playdate
 local gfx <const> = playdate.graphics
@@ -89,13 +90,13 @@ function Ball:update()
     end
 
     if self.y <= 0 then
-        self:ballScored(false)
-    elseif self.y >= 240 then
         self:ballScored(true)
+    elseif self.y >= 240 then
+        self:ballScored(false)
     end
 end
 
-function Ball:ballScored(playerScore)
+function Ball:ballScored(playerScored)
     self.active = false
     self:setVisible(false)
     self.xVelocity = 0
@@ -103,14 +104,20 @@ function Ball:ballScored(playerScore)
     -- Screen Shake here
     -- Set off animation chain (blink, move To, and then set active)
     local blinkTime = 300
+    self:screenShake()
+    if playerScored then
+        ScoreBurst(self.x, self.y + 2)
+    else
+        ScoreBurst(self.x, self.y - 5)
+    end
     pd.timer.new(1000, function()
         self:setVisible(true)
         local randomX = math.random(LEFT_WALL + 10, RIGHT_WALL - 10)
         local ySpawnOffset = 60
-        if playerScore then
-            self:moveTo(randomX, 240 - ySpawnOffset)
-        else
+        if playerScored then
             self:moveTo(randomX, ySpawnOffset)
+        else
+            self:moveTo(randomX, 240 - ySpawnOffset)
         end
         pd.timer.new(blinkTime, function()
             self:setVisible(false)
@@ -126,4 +133,18 @@ function Ball:ballScored(playerScore)
             end)
         end)
     end)
+end
+
+function Ball:screenShake()
+    local shakeTimer = pd.timer.new(700, 8, 0)
+    shakeTimer.timerEndedCallback = function()
+        pd.display.setOffset(0, 0)
+    end
+    shakeTimer.updateCallback = function(timer)
+        local shakeAmount = timer.value
+        local shakeAngle = math.random()*math.pi*2;
+        shakeX = math.floor(math.cos(shakeAngle)*shakeAmount);
+        shakeY = math.floor(math.sin(shakeAngle)*shakeAmount);
+        pd.display.setOffset(shakeX, shakeY)
+    end
 end
