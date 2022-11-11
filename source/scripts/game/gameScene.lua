@@ -1,11 +1,14 @@
 import "scripts/game/player/player"
 import "scripts/game/enemies/enemy"
+import "scripts/game/enemies/enemyList"
 import "scripts/game/wall"
 import "scripts/game/ball"
 import "libraries/Fluid"
 
 local pd <const> = playdate
 local gfx <const> = playdate.graphics
+
+local enemyList <const> = ENEMY_LIST
 
 class('GameScene').extends(gfx.sprite)
 
@@ -46,9 +49,9 @@ function GameScene:init()
         self:setImage(fluidImage)
     end
 
-    local ball = Ball(200, 120, fluid)
+    self.ball = Ball(200, 120, fluid)
     local player = Player(200, 220)
-    local enemy = Enemy(200, 20, ball)
+    local enemy = Enemy(200, 20, self.ball)
     Wall(52, 0, 10, 240)
     Wall(338, 0, 10, 240)
     -- Wall(10, -10, 380, 10)
@@ -63,8 +66,116 @@ function GameScene:init()
     SIGNAL_MANAGER:subscribe("damageEnemy", self, function()
         enemy:damage()
     end)
+
+    self:createEntranceAnimation()
 end
 
 function GameScene:update()
     
+end
+
+function GameScene:createEntranceAnimation()
+    -- Sash
+    local leftCenter, rightCenter = 88, 311
+    local sashWidth, sashHeight = 100, 240
+    local sashImage = gfx.image.new(sashWidth, sashHeight, gfx.kColorWhite)
+    local sashSpriteLeft = gfx.sprite.new(sashImage)
+    sashSpriteLeft:setZIndex(3000)
+    local sashSpriteRight = sashSpriteLeft:copy()
+    sashSpriteLeft:moveTo(leftCenter, -120)
+    sashSpriteLeft:add()
+    sashSpriteRight:moveTo(rightCenter, 240 + 120)
+    sashSpriteRight:add()
+
+    local sashTimer = pd.timer.new(1000, -120, 120, pd.easingFunctions.inOutCubic)
+    sashTimer.delay = 500
+    sashTimer.updateCallback = function(timer)
+        sashSpriteLeft:moveTo(sashSpriteLeft.x, timer.value)
+        sashSpriteRight:moveTo(sashSpriteRight.x, 240 - timer.value)
+    end
+
+    -- Character Images
+    local playerImage = gfx.imagetable.new("images/player/player-table-32-34"):getImage(1)
+    local enemyData = enemyList[CUR_LEVEL]
+    local enemyImage = gfx.imagetable.new(enemyData.imageTablePath):getImage(1)
+    local playerImageSprite = gfx.sprite.new(playerImage:scaledImage(2))
+    playerImageSprite:setZIndex(3000)
+    playerImageSprite:moveTo(leftCenter, -100)
+    playerImageSprite:add()
+    local enemyImageSprite = gfx.sprite.new(enemyImage:scaledImage(2))
+    enemyImageSprite:setZIndex(3000)
+    enemyImageSprite:moveTo(rightCenter, -100)
+    enemyImageSprite:add()
+
+    local imagesTimer = pd.timer.new(1500, -100, 80, pd.easingFunctions.inOutCubic)
+    imagesTimer.delay = 1000
+    imagesTimer.updateCallback = function(timer)
+        playerImageSprite:moveTo(playerImageSprite.x, timer.value)
+        enemyImageSprite:moveTo(enemyImageSprite.x, timer.value)
+    end
+
+    -- Character Names
+    local playerNameImage = gfx.image.new("images/player/youName")
+    local enemyNameImage = gfx.image.new(enemyData.nameImagePath)
+    local playerNameSprite = gfx.sprite.new(playerNameImage)
+    local enemyNameSprite = gfx.sprite.new(enemyNameImage)
+    playerNameSprite:setZIndex(3000)
+    playerNameSprite:moveTo(leftCenter, 300)
+    playerNameSprite:add()
+    enemyNameSprite:setZIndex(3000)
+    enemyNameSprite:moveTo(rightCenter, 300)
+    enemyNameSprite:add()
+
+    local nameTimer = pd.timer.new(1500, 300, 180, pd.easingFunctions.inOutCubic)
+    nameTimer.delay = 1200
+    nameTimer.updateCallback = function(timer)
+        playerNameSprite:moveTo(playerNameSprite.x, timer.value)
+        enemyNameSprite:moveTo(enemyNameSprite.x, timer.value)
+    end
+
+    -- VS
+    local imageTable = gfx.imagetable.new("images/game/intro/versusShake-table-93-67")
+    local animationLoop = gfx.animation.loop.new(20, imageTable, false)
+    animationLoop.paused = true
+    local vsSprite = gfx.sprite.new(animationLoop:image())
+    vsSprite.animationLoop = animationLoop
+    vsSprite:add()
+    function vsSprite:update()
+        self:setImage(self.animationLoop:image())
+    end
+    vsSprite:setZIndex(3000)
+    vsSprite:moveTo(200, -40)
+
+    local vsTimer = pd.timer.new(1000, -40, 120, pd.easingFunctions.inOutCubic)
+    vsTimer.delay = 2000
+    vsTimer.updateCallback = function(timer)
+        vsSprite:moveTo(vsSprite.x, timer.value)
+    end
+    vsTimer.timerEndedCallback = function()
+        animationLoop.paused = false
+    end
+
+    pd.timer.performAfterDelay(4000, function()
+        local moveLeftTimer = pd.timer.new(1000, leftCenter, -100, pd.easingFunctions.inOutCubic)
+        moveLeftTimer.updateCallback = function(timer)
+            sashSpriteLeft:moveTo(timer.value, sashSpriteLeft.y)
+            playerImageSprite:moveTo(timer.value, playerImageSprite.y)
+            playerNameSprite:moveTo(timer.value, playerNameSprite.y)
+        end
+
+        local moveRightTimer = pd.timer.new(1000, rightCenter, 500, pd.easingFunctions.inOutCubic)
+        moveRightTimer.updateCallback = function(timer)
+            sashSpriteRight:moveTo(timer.value, sashSpriteRight.y)
+            enemyImageSprite:moveTo(timer.value, enemyImageSprite.y)
+            enemyNameSprite:moveTo(timer.value, enemyNameSprite.y)
+        end
+
+        local moveUpTimer = pd.timer.new(1000, 120, -100, pd.easingFunctions.inOutCubic)
+        moveUpTimer.updateCallback = function(timer)
+            vsSprite:moveTo(vsSprite.x, timer.value)
+        end
+        moveUpTimer.timerEndedCallback = function()
+            self.ball:resetBall(false)
+        end
+    end)
 end

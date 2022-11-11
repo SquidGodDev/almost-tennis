@@ -18,3 +18,18 @@ function utilities.centeredTextImage(text)
     gfx.popContext()
     return descriptionImage
 end
+
+function utilities.animatedSprite(imageTablePath, delay, shouldLoop)
+    local imageTable = gfx.imagetable.new(imageTablePath)
+    local animationLoop = gfx.animation.loop.new(delay, imageTable, shouldLoop)
+    local animatedSprite = gfx.sprite.new(animationLoop:image())
+    animatedSprite.animationLoop = animationLoop
+    animatedSprite:add()
+    function animatedSprite:update()
+        self:setImage(self.animationLoop:image())
+        if not self.animationLoop:isValid() and not self.shouldLoop then
+            self:remove()
+        end
+    end
+    return animatedSprite
+end

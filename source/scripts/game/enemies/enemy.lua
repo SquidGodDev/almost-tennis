@@ -1,9 +1,12 @@
 import "libraries/AnimatedSprite"
 import "scripts/game/player/racquet"
 import "scripts/game/healthbar/healthbar"
+import "scripts/game/enemies/enemyList"
 
 local pd <const> = playdate
 local gfx <const> = playdate.graphics
+
+local enemyList <const> = ENEMY_LIST
 
 local DIRECTION = {
     LEFT = -1,
@@ -17,7 +20,8 @@ function Enemy:init(x, y, ball)
     self.healthbar = HealthBar(4, true)
     self.ball = ball
 
-    local enemySpriteSheet = gfx.imagetable.new("images/player/player-table-32-34")
+    local enemyData = enemyList[CUR_LEVEL]
+    local enemySpriteSheet = gfx.imagetable.new(enemyData.imageTablePath)
     Enemy.super.init(self, enemySpriteSheet)
     self:addState("idle", 1, 4, {tickStep = 4})
     self:addState("run", 5, 8, {tickStep = 4})

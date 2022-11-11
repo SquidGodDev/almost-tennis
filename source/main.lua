@@ -6,6 +6,8 @@ import "CoreLibs/timer"
 import "CoreLibs/animation"
 
 import "libraries/Signal"
+import "libraries/Utilities"
+import "libraries/SceneManager"
 
 local pd <const> = playdate
 local gfx <const> = playdate.graphics
@@ -16,11 +18,16 @@ BALL_TAG = 20
 LEFT_WALL = 62
 RIGHT_WALL = 337
 
+CUR_LEVEL = 1
+
 SIGNAL_MANAGER = Signal()
+SCENE_MANAGER = SceneManager()
 
 import "scripts/game/gameScene"
+import "scripts/title/titleScene"
 
-GameScene()
+-- GameScene()
+TitleScene()
 
 function pd.update()
     gfx.sprite.update()

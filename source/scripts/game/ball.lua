@@ -11,8 +11,8 @@ function Ball:init(x, y, fluid)
 
     self.velocity = 8
 
-    self.xVelocity = 4
-    self.yVelocity = 4
+    self.xVelocity = 0
+    self.yVelocity = 0
 
     local ballImage = gfx.image.new("images/game/ball")
     self:setImage(ballImage)
@@ -25,7 +25,8 @@ function Ball:init(x, y, fluid)
 
     self.crossedNet = false
 
-    self.active = true
+    self:setVisible(false)
+    self.active = false
 end
 
 function Ball:collisionResponse(other)
@@ -97,13 +98,6 @@ function Ball:update()
 end
 
 function Ball:ballScored(playerScored)
-    self.active = false
-    self:setVisible(false)
-    self.xVelocity = 0
-    self.yVelocity = 0
-    -- Screen Shake here
-    -- Set off animation chain (blink, move To, and then set active)
-    local blinkTime = 300
     self:screenShake()
     if playerScored then
         ScoreBurst(self.x, self.y + 2)
@@ -112,11 +106,20 @@ function Ball:ballScored(playerScored)
         ScoreBurst(self.x, self.y - 5)
         SIGNAL_MANAGER:notify("damagePlayer")
     end
+    self:resetBall(playerScored)
+end
+
+function Ball:resetBall(spawnAtEnemySide)
+    local blinkTime = 300
+    self.active = false
+    self:setVisible(false)
+    self.xVelocity = 0
+    self.yVelocity = 0
     pd.timer.new(1000, function()
         self:setVisible(true)
         local randomX = math.random(LEFT_WALL + 10, RIGHT_WALL - 10)
         local ySpawnOffset = 60
-        if playerScored then
+        if spawnAtEnemySide then
             self:moveTo(randomX, ySpawnOffset)
         else
             self:moveTo(randomX, 240 - ySpawnOffset)
