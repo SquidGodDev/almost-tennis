@@ -81,10 +81,6 @@ function GameScene:init()
     self:createEntranceAnimation()
 end
 
-function GameScene:update()
-    
-end
-
 function GameScene:createGameEndAnimation(win)
     local resultSashImage
     if win then

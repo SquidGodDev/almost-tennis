@@ -39,17 +39,18 @@ function Enemy:init(x, y, ball)
 
     self.idleBuffer = 2
 
-    -- Adjustable Attributes
-    self.healthbar = HealthBar(1, true)
-    self.maxVelocity = 3
     self.hitRangeX = 65
     self.hitRangeY = 60
-    -- Hit cooldown
-    -- Hit velocity
+
+    -- Adjustable Attributes
+    self.healthbar = HealthBar(enemyData.health, true)
+    self.maxVelocity = enemyData.maxVelocity
+    self.hitVelocity = enemyData.hitSpeed
+    self.hitVariance = enemyData.hitVariance
 
     self:moveTo(x, y)
 
-    self.racquet = Racquet(x, y + 10, self, true)
+    self.racquet = Racquet(x, y + 10, self, true, self.hitVelocity, self.hitVariance)
 
     self.leftWall = LEFT_WALL
     self.rightWall = RIGHT_WALL

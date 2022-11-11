@@ -9,8 +9,6 @@ class('Ball').extends(gfx.sprite)
 function Ball:init(x, y, fluid)
     self.fluid = fluid
 
-    self.velocity = 8
-
     self.xVelocity = 0
     self.yVelocity = 0
 
@@ -42,7 +40,7 @@ function Ball:collisionResponse(other)
      end
 end
 
-function Ball:hit(hitX, hitY, isEnemy)
+function Ball:hit(hitX, hitY, isEnemy, hitVelocity)
     if not self.active then
         return
     end
@@ -52,8 +50,8 @@ function Ball:hit(hitX, hitY, isEnemy)
     if isEnemy then
         angleSin *= -1
     end
-    self.xVelocity = angleCos * self.velocity
-    self.yVelocity = -angleSin * self.velocity
+    self.xVelocity = angleCos * hitVelocity
+    self.yVelocity = -angleSin * hitVelocity
     if math.abs(self.yVelocity) < 0.5 then
         self.yVelocity = -0.5
     end

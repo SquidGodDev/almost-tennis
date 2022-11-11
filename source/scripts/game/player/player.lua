@@ -19,19 +19,22 @@ function Player:init(x, y)
 
     self:playAnimation()
 
-    self.healthbar = HealthBar(8, false)
     self.velocity = 0
     self.startVelocity = 1
-    self.maxVelocity = 3
     self.acceleration = 0.3
     self.friction = 0.3
-
     self.idleVelocity = 0.3
+
+    -- Adjustable Attributes
+    self.healthbar = HealthBar(8, false)
+    self.maxVelocity = 3
+    self.hitVelocity = 8
+
 
     self:moveTo(x, y)
 
-    self.racquetOffset = 0
-    self.racquet = Racquet(x + self.racquetOffset, y - 10, self)
+
+    self.racquet = Racquet(x, y - 10, self, false, self.hitVelocity)
 
     self.leftWall = LEFT_WALL
     self.rightWall = RIGHT_WALL
@@ -84,11 +87,11 @@ function Player:update()
         if self.velocity < 0 then
             self.globalFlip = 1
             self.racquet:flip(1)
-            self.racquet:moveTo(self.x - self.racquetOffset, self.racquet.y)
+            self.racquet:moveTo(self.x, self.racquet.y)
         elseif self.velocity > 0 then
             self.globalFlip = 0
             self.racquet:flip(0)
-            self.racquet:moveTo(self.x + self.racquetOffset, self.racquet.y)
+            self.racquet:moveTo(self.x, self.racquet.y)
         end
     end
 

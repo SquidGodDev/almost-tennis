@@ -6,7 +6,7 @@ local gfx <const> = playdate.graphics
 
 class('Racquet').extends(AnimatedSprite)
 
-function Racquet:init(x, y, entity, isEnemy)
+function Racquet:init(x, y, entity, isEnemy, hitVelocity, hitVariance)
     self.entity = entity
     local racquetSpriteSheet = gfx.imagetable.new("images/player/racquetSwingLarge-table-125-95")
     Racquet.super.init(self, racquetSpriteSheet)
@@ -28,7 +28,7 @@ function Racquet:init(x, y, entity, isEnemy)
             if isEnemy then
                 xOffset, yOffset = -64, -14
             end
-            Hitbox(self.x + xOffset, self.y + yOffset, hitboxWidth, hitboxHeight, self.entity, isEnemy)
+            Hitbox(self.x + xOffset, self.y + yOffset, hitboxWidth, hitboxHeight, self.entity, isEnemy, hitVelocity, hitVariance)
         end
     end
 
