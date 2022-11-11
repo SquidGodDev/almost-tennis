@@ -74,7 +74,7 @@ ENEMY_LIST = {
     {
         imageTablePath = "images/enemies/kingBob-table-32-56",
         nameImagePath = "images/enemies/kingBobName",
-        health = 1,
+        health = 10,
         maxVelocity = 5,
         hitSpeed = 8,
         hitVariance = 1

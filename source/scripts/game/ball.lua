@@ -3,6 +3,7 @@ import "scripts/game/scoreBurst"
 
 local pd <const> = playdate
 local gfx <const> = playdate.graphics
+local util <const> = utilities
 
 class('Ball').extends(gfx.sprite)
 
@@ -134,15 +135,18 @@ function Ball:resetBall(spawnAtEnemySide)
     self:setVisible(false)
     self.xVelocity = 0
     self.yVelocity = 0
-    pd.timer.new(1000, function()
+    local randomX = math.random(LEFT_WALL + 10, RIGHT_WALL - 10)
+    local ySpawnOffset = 60
+    local spawnY = ySpawnOffset
+    if not spawnAtEnemySide then
+        spawnY = 240 - ySpawnOffset
+    end
+    local spawnBurstSprite = util.animatedSprite("images/game/spawnBurst-table-93-96", 20, false)
+    spawnBurstSprite:setZIndex(2000)
+    spawnBurstSprite:moveTo(randomX, spawnY)
+    pd.timer.new(800, function()
         self:setVisible(true)
-        local randomX = math.random(LEFT_WALL + 10, RIGHT_WALL - 10)
-        local ySpawnOffset = 60
-        if spawnAtEnemySide then
-            self:moveTo(randomX, ySpawnOffset)
-        else
-            self:moveTo(randomX, 240 - ySpawnOffset)
-        end
+        self:moveTo(randomX, spawnY)
         pd.timer.new(blinkTime, function()
             self:setVisible(false)
             pd.timer.new(blinkTime, function()
