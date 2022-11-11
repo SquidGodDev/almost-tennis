@@ -5,6 +5,7 @@ import "scripts/game/wall"
 import "scripts/game/ball"
 import "scripts/title/titleScene"
 import "libraries/Fluid"
+import "scripts/game/gameEndScene"
 
 local pd <const> = playdate
 local gfx <const> = playdate.graphics
@@ -102,7 +103,11 @@ function GameScene:createGameEndAnimation(win)
         pd.timer.performAfterDelay(1000, function()
             if win then
                 CUR_LEVEL += 1
-                SCENE_MANAGER:switchScene(GameScene)
+                if CUR_LEVEL > 10 then
+                    SCENE_MANAGER:switchScene(GameEndScene)
+                else
+                    SCENE_MANAGER:switchScene(GameScene)
+                end
             else
                 SCENE_MANAGER:switchScene(TitleScene)
             end

@@ -27,6 +27,7 @@ SCENE_MANAGER = SceneManager()
 
 import "scripts/game/gameScene"
 import "scripts/title/titleScene"
+import "scripts/game/gameEndScene"
 
 -- GameScene()
 TitleScene()
