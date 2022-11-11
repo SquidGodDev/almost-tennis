@@ -8,15 +8,18 @@ local gfx <const> = playdate.graphics
 class('Player').extends(AnimatedSprite)
 
 function Player:init(x, y)
-    self.healthbar = HealthBar(8, false)
     local playerSpriteSheet = gfx.imagetable.new("images/player/player-table-32-34")
     Player.super.init(self, playerSpriteSheet)
     self:addState("idle", 1, 4, {tickStep = 4})
     self:addState("run", 5, 8, {tickStep = 4})
-    self:addState("death", 9, 15, {tickStep = 4, loop = false})
+    self:addState("death", 9, 15, {tickStep = 6, loop = false})
+    self.states["death"].onAnimationEndEvent = function()
+        self:remove()
+    end
 
     self:playAnimation()
 
+    self.healthbar = HealthBar(8, false)
     self.velocity = 0
     self.startVelocity = 1
     self.maxVelocity = 3
@@ -38,6 +41,7 @@ end
 
 function Player:update()
     if self.currentState == "death" then
+        self:updateAnimation()
         return
     end
 
@@ -100,4 +104,12 @@ end
 
 function Player:damage()
     self.healthbar:damage()
+    if self:isDead() then
+        self:changeState("death")
+        self.racquet:remove()
+    end
+end
+
+function Player:isDead()
+    return self.healthbar:isDead()
 end

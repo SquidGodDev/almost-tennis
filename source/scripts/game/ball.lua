@@ -29,6 +29,11 @@ function Ball:init(x, y, fluid)
     self.active = false
 end
 
+function Ball:initEntities(player, enemy)
+    self.player = player
+    self.enemy = enemy
+end
+
 function Ball:collisionResponse(other)
     if other:isa(Wall) then
         return gfx.sprite.kCollisionTypeBounce
@@ -101,10 +106,26 @@ function Ball:ballScored(playerScored)
     self:screenShake()
     if playerScored then
         ScoreBurst(self.x, self.y + 2)
-        SIGNAL_MANAGER:notify("damageEnemy")
+        self.enemy:damage()
+        if self.enemy:isDead() then
+            SIGNAL_MANAGER:notify("enemyDied")
+            self.active = false
+            self:setVisible(false)
+            self.xVelocity = 0
+            self.yVelocity = 0
+            return
+        end
     else
         ScoreBurst(self.x, self.y - 5)
-        SIGNAL_MANAGER:notify("damagePlayer")
+        self.player:damage()
+        if self.player:isDead() then
+            SIGNAL_MANAGER:notify("playerDied")
+            self.active = false
+            self:setVisible(false)
+            self.xVelocity = 0
+            self.yVelocity = 0
+            return
+        end
     end
     self:resetBall(playerScored)
 end

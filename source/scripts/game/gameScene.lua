@@ -52,6 +52,7 @@ function GameScene:init()
     self.ball = Ball(200, 120, fluid)
     local player = Player(200, 220)
     local enemy = Enemy(200, 20, self.ball)
+    self.ball:initEntities(player, enemy)
     Wall(52, 0, 10, 240)
     Wall(338, 0, 10, 240)
     -- Wall(10, -10, 380, 10)
@@ -67,10 +68,23 @@ function GameScene:init()
         enemy:damage()
     end)
 
+    SIGNAL_MANAGER:subscribe("playerDied", self, function()
+        self:createGameEndAnimation(false)
+    end)
+
+    SIGNAL_MANAGER:subscribe("enemyDied", self, function()
+        self:createGameEndAnimation(true)
+    end)
+
+
     self:createEntranceAnimation()
 end
 
 function GameScene:update()
+    
+end
+
+function GameScene:createGameEndAnimation(win)
     
 end
 

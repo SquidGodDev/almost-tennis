@@ -58,8 +58,8 @@ function HealthBar:damage()
         halfHeartSpriteCopy:add()
         self.heartArray[math.ceil(self.health / 2)] = halfHeartSpriteCopy
     end
+end
 
-    if self.health <= 0 then
-        -- Signal death
-    end
+function HealthBar:isDead()
+    return self.health <= 0
 end

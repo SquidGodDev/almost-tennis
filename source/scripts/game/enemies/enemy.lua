@@ -17,7 +17,6 @@ local DIRECTION = {
 class('Enemy').extends(AnimatedSprite)
 
 function Enemy:init(x, y, ball)
-    self.healthbar = HealthBar(4, true)
     self.ball = ball
 
     local enemyData = enemyList[CUR_LEVEL]
@@ -25,7 +24,10 @@ function Enemy:init(x, y, ball)
     Enemy.super.init(self, enemySpriteSheet)
     self:addState("idle", 1, 4, {tickStep = 4})
     self:addState("run", 5, 8, {tickStep = 4})
-    self:addState("death", 9, 15, {tickStep = 4, loop = false})
+    self:addState("death", 9, 15, {tickStep = 6, loop = false})
+    self.states["death"].onAnimationEndEvent = function()
+        self:remove()
+    end
 
     self:playAnimation()
 
@@ -38,8 +40,8 @@ function Enemy:init(x, y, ball)
     self.idleBuffer = 2
 
     -- Adjustable Attributes
+    self.healthbar = HealthBar(1, true)
     self.maxVelocity = 3
-    self.hitRange = 60
     self.hitRangeX = 65
     self.hitRangeY = 60
     -- Hit cooldown
@@ -57,6 +59,7 @@ end
 
 function Enemy:update()
     if self.currentState == "death" then
+        self:updateAnimation()
         return
     end
 
@@ -126,8 +129,16 @@ function Enemy:update()
     self:updateAnimation()
 end
 
+function Enemy:isDead()
+    return self.healthbar:isDead()
+end
+
 function Enemy:damage()
     self.healthbar:damage()
+    if self:isDead() then
+        self:changeState("death")
+        self.racquet:remove()
+    end
 end
 
 function Enemy:distanceToBall()

@@ -36,9 +36,6 @@ function Racquet:init(x, y, entity, isEnemy)
     self:playAnimation()
 
     self.flipped = flipped
-    if flipped then
-        
-    end
 end
 
 function Racquet:update()
