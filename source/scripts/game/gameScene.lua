@@ -3,6 +3,7 @@ import "scripts/game/enemies/enemy"
 import "scripts/game/enemies/enemyList"
 import "scripts/game/wall"
 import "scripts/game/ball"
+import "scripts/title/titleScene"
 import "libraries/Fluid"
 
 local pd <const> = playdate
@@ -85,7 +86,32 @@ function GameScene:update()
 end
 
 function GameScene:createGameEndAnimation(win)
-    
+    local resultSashImage
+    if win then
+        resultSashImage = gfx.image.new("images/game/victorySash")
+    else
+        resultSashImage = gfx.image.new("images/game/defeatSash")
+    end
+
+    resultSashSprite = gfx.sprite.new(resultSashImage)
+    resultSashSprite:setZIndex(3000)
+    resultSashSprite:moveTo(200, 120)
+    resultSashSprite:add()
+    resultSashSprite:setClipRect(0, 0, 0, 240)
+    local resultSashTimer = pd.timer.new(2000, 0, 400, pd.easingFunctions.inOutCubic)
+    resultSashTimer.updateCallback = function(timer)
+        resultSashSprite:setClipRect(0, 0, timer.value, 240)
+    end
+    resultSashTimer.timerEndedCallback = function()
+        pd.timer.performAfterDelay(1000, function()
+            if win then
+                CUR_LEVEL += 1
+                SCENE_MANAGER:switchScene(GameScene)
+            else
+                SCENE_MANAGER:switchScene(TitleScene)
+            end
+        end)
+    end
 end
 
 function GameScene:createEntranceAnimation()
