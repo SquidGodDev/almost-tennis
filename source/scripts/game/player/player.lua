@@ -1,14 +1,17 @@
 import "libraries/AnimatedSprite"
 import "scripts/game/player/racquet"
 import "scripts/game/healthbar/healthbar"
+import "scripts/game/player/characterStats"
 
 local pd <const> = playdate
 local gfx <const> = playdate.graphics
+local characterStats <const> = CHARACTER_STATS
 
 class('Player').extends(AnimatedSprite)
 
 function Player:init(x, y)
-    local playerSpriteSheet = gfx.imagetable.new("images/player/player-table-32-34")
+    local curCharStats = characterStats[SELECTED_CHARACTER]
+    local playerSpriteSheet = gfx.imagetable.new(curCharStats.imageTablePath)
     Player.super.init(self, playerSpriteSheet)
     self:addState("idle", 1, 4, {tickStep = 4})
     self:addState("run", 5, 8, {tickStep = 4})
@@ -26,9 +29,9 @@ function Player:init(x, y)
     self.idleVelocity = 0.3
 
     -- Adjustable Attributes
-    self.healthbar = HealthBar(8, false)
-    self.maxVelocity = 3
-    self.hitVelocity = 8
+    self.healthbar = HealthBar(CUR_HEALTH, false)
+    self.maxVelocity = curCharStats.maxVelocity
+    self.hitVelocity = curCharStats.hitVelocity
 
 
     self:moveTo(x, y)
@@ -107,6 +110,7 @@ end
 
 function Player:damage()
     self.healthbar:damage()
+    CUR_HEALTH = self.healthbar.health
     if self:isDead() then
         self:changeState("death")
         self.racquet:remove()

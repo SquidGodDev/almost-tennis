@@ -22,6 +22,16 @@ CUR_LEVEL = 1
 MAX_HEALTH = 8
 CUR_HEALTH = 6
 
+SELECTED_CHARACTER = "contender"
+CHEF_UNLOCKED = false
+KNIGHT_UNLOCKED = false
+
+local gameData = pd.datastore.read()
+if gameData then
+    CHEF_UNLOCKED = gameData.chefUnlocked
+    KNIGHT_UNLOCKED = gameData.knightUnlocked
+end
+
 SIGNAL_MANAGER = Signal()
 SCENE_MANAGER = SceneManager()
 
@@ -36,4 +46,20 @@ function pd.update()
     gfx.sprite.update()
     pd.timer.updateTimers()
     pd.drawFPS(5, 5)
+end
+
+function pd.gameWillTerminate()
+    local saveData = {
+        chefUnlocked = CHEF_UNLOCKED,
+        knightUnlocked = KNIGHT_UNLOCKED
+    }
+    pd.datastore.write(saveData)
+end
+
+function pd.gameWillSleep()
+    local saveData = {
+        chefUnlocked = CHEF_UNLOCKED,
+        knightUnlocked = KNIGHT_UNLOCKED
+    }
+    pd.datastore.write(saveData)
 end

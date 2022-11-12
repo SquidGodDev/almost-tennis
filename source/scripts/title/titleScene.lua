@@ -1,8 +1,10 @@
 import "scripts/game/gameScene"
+import "scripts/game/player/characterStats"
 
 local pd <const> = playdate
 local gfx <const> = playdate.graphics
 local util <const> = utilities
+local characterStats <const> = CHARACTER_STATS
 
 class('TitleScene').extends(gfx.sprite)
 
@@ -16,13 +18,15 @@ function TitleScene:init()
 
     local titleSprite = util.animatedSprite("images/title/almostTennisTitle-table-237-137", 20, true)
     titleSprite:moveTo(200, -90)
-    self:entranceAnimator(titleSprite, 1000, -90, 90)
+    self.titleSprite = titleSprite
+    self.titleAnimator = self:entranceAnimator(titleSprite, 1000, -90, 90)
 
     local instructionImage = gfx.image.new("images/title/startInstruction")
     local instructionSprite = gfx.sprite.new(instructionImage)
+    self.instructionSprite = instructionSprite
     instructionSprite:add()
     instructionSprite:moveTo(200, 260)
-    self:entranceAnimator(instructionSprite, 1500, 260, 215)
+    self.instructionAnimator = self:entranceAnimator(instructionSprite, 1500, 260, 215)
     pd.timer.performAfterDelay(1500, function()
         local blinkTimer = pd.timer.new(500)
         blinkTimer.repeats = true
@@ -32,12 +36,86 @@ function TitleScene:init()
     end)
 
     self:add()
+
+    self.characterSelection = false
+
+    local characterBannerImage = gfx.image.new("images/title/allCharactersLocked")
+    if CHEF_UNLOCKED then
+        characterBannerImage = gfx.image.new("images/title/allCharacters")
+    elseif KNIGHT_UNLOCKED then
+        characterBannerImage = gfx.image.new("images/title/allCharactersKnightUnlocked")
+    end
+    self.characterBanner = gfx.sprite.new(characterBannerImage)
+    self.characterBanner:moveTo(600, -120)
+    self.characterBanner:add()
+
+    self.characters = {
+        "contender",
+        "knight",
+        "chef"
+    }
+
+    self.selectedIndex = 1
+
+    self.scrollPosition = 600
+    self.scrollAnimator = pd.timer.new(500)
+    self.scrollAnimator.discardOnCompletion = false
+    self.scrollAnimator.easingFunction = pd.easingFunctions.outCubic
+    self.scrollAnimator:pause()
+    self.scrollAnimator.updateCallback = function(timer)
+        self.scrollPosition = timer.value
+    end
+    self.scrollAnimator.timerEndedCallback = function(timer)
+        self.scrollPosition = timer.endValue
+    end
 end
 
 function TitleScene:update()
     if pd.buttonJustPressed(pd.kButtonA) then
-        SCENE_MANAGER:switchScene(GameScene)
+        if not self.characterSelection then
+            self.characterSelection = true
+            self:characterSelectAnimation()
+        else
+            local selectedCharacter = self.characters[self.selectedIndex]
+            local validSelection = true
+            if selectedCharacter == "knight" and not KNIGHT_UNLOCKED then
+                validSelection = false
+            elseif selectedCharacter == "chef" and not CHEF_UNLOCKED then
+                validSelection = false
+            end
+
+            if validSelection then
+                SELECTED_CHARACTER = selectedCharacter
+                MAX_HEALTH = characterStats[selectedCharacter].maxHealth
+                CUR_HEALTH = MAX_HEALTH
+                SCENE_MANAGER:switchScene(GameScene)
+            end
+        end
     end
+
+    if self.characterSelection then
+        if pd.buttonJustPressed(pd.kButtonLeft) then
+            if self.selectedIndex > 1 then
+                self.selectedIndex -= 1
+                self:animateScroll(self.selectedIndex)
+            end
+        elseif pd.buttonJustPressed(pd.kButtonRight) then
+            if self.selectedIndex < #self.characters then
+                self.selectedIndex += 1
+                self:animateScroll(self.selectedIndex)
+            end
+        end
+    end
+
+    self.characterBanner:moveTo(self.scrollPosition, self.characterBanner.y)
+end
+
+function TitleScene:animateScroll(index)
+    local newPos = 600 - (index - 1) * 400
+    self.scrollAnimator:reset()
+    self.scrollAnimator.startValue = self.scrollPosition
+    self.scrollAnimator.endValue = newPos
+    self.scrollAnimator:start()
 end
 
 function TitleScene:entranceAnimator(sprite, time, startVal, endVal)
@@ -47,5 +125,20 @@ function TitleScene:entranceAnimator(sprite, time, startVal, endVal)
     end
     animator.timerEndedCallback = function(timer)
         sprite:moveTo(sprite.x, timer.endValue)
+    end
+    return animator
+end
+
+function TitleScene:characterSelectAnimation()
+    self.titleAnimator:remove()
+    self.instructionAnimator:remove()
+    local titleAnimator = pd.timer.new(1000, 200, -200, pd.easingFunctions.inOutCubic)
+    titleAnimator.updateCallback = function(timer)
+        self.titleSprite:moveTo(timer.value, self.titleSprite.y)
+        self.instructionSprite:moveTo(400 - timer.value, self.instructionSprite.y)
+    end
+    local characterBannerAnimator = pd.timer.new(1000, self.characterBanner.y, -self.characterBanner.y, pd.easingFunctions.inOutCubic)
+    characterBannerAnimator.updateCallback = function(timer)
+        self.characterBanner:moveTo(self.characterBanner.x, timer.value)
     end
 end

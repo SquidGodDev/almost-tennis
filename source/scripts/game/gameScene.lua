@@ -103,6 +103,10 @@ function GameScene:createGameEndAnimation(win)
         pd.timer.performAfterDelay(1000, function()
             if win then
                 CUR_LEVEL += 1
+                CUR_HEALTH += 2
+                if CUR_HEALTH > MAX_HEALTH then
+                    CUR_HEALTH = MAX_HEALTH
+                end
                 if CUR_LEVEL > 10 then
                     SCENE_MANAGER:switchScene(GameEndScene)
                 else

@@ -11,6 +11,12 @@ function GameEndScene:init()
     self:moveTo(200, 120)
     self:add()
 
+    if SELECTED_CHARACTER == "contender" then
+        KNIGHT_UNLOCKED = true
+    elseif SELECTED_CHARACTER == "knight" then
+        CHEF_UNLOCKED = true
+    end
+
     local congratsImage = gfx.image.new("images/game/end/congratulationsText")
     local congratsSprite = gfx.sprite.new(congratsImage)
     congratsSprite:moveTo(200, 120)
