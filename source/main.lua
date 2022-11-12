@@ -23,14 +23,14 @@ MAX_HEALTH = 8
 CUR_HEALTH = 6
 
 SELECTED_CHARACTER = "contender"
-CHEF_UNLOCKED = true
-KNIGHT_UNLOCKED = true
+CHEF_UNLOCKED = false
+KNIGHT_UNLOCKED = false
 
--- local gameData = pd.datastore.read()
--- if gameData then
---     CHEF_UNLOCKED = gameData.chefUnlocked
---     KNIGHT_UNLOCKED = gameData.knightUnlocked
--- end
+local gameData = pd.datastore.read()
+if gameData then
+    CHEF_UNLOCKED = gameData.chefUnlocked
+    KNIGHT_UNLOCKED = gameData.knightUnlocked
+end
 
 SIGNAL_MANAGER = Signal()
 SCENE_MANAGER = SceneManager()

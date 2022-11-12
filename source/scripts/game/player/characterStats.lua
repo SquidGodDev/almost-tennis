@@ -9,8 +9,8 @@ CHARACTER_STATS = {
     knight = {
         maxHealth = 12,
         maxVelocity = 2.5,
-        hitVelocity = 8.5,
-        maxCharge = 50,
+        hitVelocity = 7.5,
+        maxCharge = 100,
         imageTablePath = "images/player/theKnight-table-32-56"
     },
     chef = {
