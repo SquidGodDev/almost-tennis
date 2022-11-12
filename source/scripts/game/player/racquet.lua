@@ -17,6 +17,8 @@ function Racquet:init(x, y, entity, isEnemy, hitVelocity, hitVariance)
         self.flipped = 0
     end
 
+    self.bonusPower = 0
+
     self:addState("idle", 1, 120, {tickStep = 1, flip = self.flipped})
     self:addState("swing", 121, 144, {tickStep = 1, nextAnimation = "idle", flip = self.flipped})
 
@@ -28,7 +30,8 @@ function Racquet:init(x, y, entity, isEnemy, hitVelocity, hitVariance)
             if isEnemy then
                 xOffset, yOffset = -64, -14
             end
-            Hitbox(self.x + xOffset, self.y + yOffset, hitboxWidth, hitboxHeight, self.entity, isEnemy, hitVelocity, hitVariance)
+            Hitbox(self.x + xOffset, self.y + yOffset, hitboxWidth, hitboxHeight, self.entity, isEnemy, hitVelocity + self.bonusPower, hitVariance)
+            self.bonusPower = 0
         end
     end
 
@@ -52,4 +55,12 @@ end
 
 function Racquet:flip(direction)
     self.globalFlip = direction
+end
+
+function Racquet:resetState()
+    self:changeState("idle")
+end
+
+function Racquet:setBonusPower(bonusPower)
+    self.bonusPower = bonusPower
 end
