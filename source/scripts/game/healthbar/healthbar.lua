@@ -20,7 +20,7 @@ function HealthBar:init(health, isEnemy)
         self.baseY = 15
         self.dir = 1
     else
-        self.baseX = 400 - 29
+        self.baseX = 386
         self.baseY = 240 - 15
         self.dir = -1
     end

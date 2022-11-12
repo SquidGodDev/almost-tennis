@@ -32,7 +32,10 @@ function Hitbox:update()
             local curSprite = overlappingSprites[i]
             if curSprite:getTag() == BALL_TAG then
                 self.hit = true
-                curSprite:hit(self.sourceEntity.x, self.sourceEntity.y, self.isEnemy, self:getHitVelocity())
+                local hitSuccessful = curSprite:hit(self.sourceEntity.x, self.sourceEntity.y, self.isEnemy, self:getHitVelocity())
+                if not self.isEnemy and hitSuccessful then
+                    SIGNAL_MANAGER:notify("ballHit")
+                end
             end
         end
     end

@@ -43,7 +43,7 @@ end
 
 function Ball:hit(hitX, hitY, isEnemy, hitVelocity)
     if not self.active then
-        return
+        return false
     end
 
     local angleCos = (self.x - hitX) / (math.sqrt((self.x - hitX)^2 + (self.y - hitY)^2))
@@ -56,6 +56,7 @@ function Ball:hit(hitX, hitY, isEnemy, hitVelocity)
     if math.abs(self.yVelocity) < 0.5 then
         self.yVelocity = -0.5
     end
+    return true
 end
 
 function Ball:update()

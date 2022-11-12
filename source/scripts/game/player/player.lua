@@ -2,6 +2,7 @@ import "libraries/AnimatedSprite"
 import "scripts/game/player/racquet"
 import "scripts/game/healthbar/healthbar"
 import "scripts/game/player/characterStats"
+import "scripts/game/player/powerBar"
 
 local pd <const> = playdate
 local gfx <const> = playdate.graphics
@@ -43,6 +44,11 @@ function Player:init(x, y)
     self.rightWall = RIGHT_WALL
 
     self:setZIndex(10)
+
+    self.powerBar = PowerBar(curCharStats.maxCharge)
+    SIGNAL_MANAGER:subscribe("ballHit", self, function()
+        self.powerBar:updateCharge(10)
+    end)
 end
 
 function Player:update()
@@ -84,6 +90,10 @@ function Player:update()
 
     if pd.buttonJustPressed(pd.kButtonA) then
         self.racquet:swing()
+    end
+
+    if pd.buttonJustPressed(pd.kButtonB) then
+        self.powerBar:useCharge()
     end
 
     if not self.racquet:isSwinging() then

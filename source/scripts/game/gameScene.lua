@@ -6,9 +6,11 @@ import "scripts/game/ball"
 import "scripts/title/titleScene"
 import "libraries/Fluid"
 import "scripts/game/gameEndScene"
+import "scripts/game/player/characterStats"
 
 local pd <const> = playdate
 local gfx <const> = playdate.graphics
+local characterStats <const> = CHARACTER_STATS
 
 local enemyList <const> = ENEMY_LIST
 
@@ -140,7 +142,8 @@ function GameScene:createEntranceAnimation()
     end
 
     -- Character Images
-    local playerImage = gfx.imagetable.new("images/player/player-table-32-34"):getImage(1)
+    local curCharStats = characterStats[SELECTED_CHARACTER]
+    local playerImage = gfx.imagetable.new(curCharStats.imageTablePath):getImage(1)
     local enemyData = enemyList[CUR_LEVEL]
     local enemyImage = gfx.imagetable.new(enemyData.imageTablePath):getImage(1)
     local playerImageSprite = gfx.sprite.new(playerImage:scaledImage(2))

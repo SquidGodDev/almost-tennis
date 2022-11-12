@@ -35,17 +35,13 @@ end
 SIGNAL_MANAGER = Signal()
 SCENE_MANAGER = SceneManager()
 
-import "scripts/game/gameScene"
 import "scripts/title/titleScene"
-import "scripts/game/gameEndScene"
 
--- GameScene()
 TitleScene()
 
 function pd.update()
     gfx.sprite.update()
     pd.timer.updateTimers()
-    pd.drawFPS(5, 5)
 end
 
 function pd.gameWillTerminate()
