@@ -23,21 +23,21 @@ MAX_HEALTH = 8
 CUR_HEALTH = 6
 
 SELECTED_CHARACTER = "contender"
-CHEF_UNLOCKED = true
-KNIGHT_UNLOCKED = true
+CHEF_UNLOCKED = false
+KNIGHT_UNLOCKED = false
 
--- local gameData = pd.datastore.read()
--- if gameData then
---     CHEF_UNLOCKED = gameData.chefUnlocked
---     KNIGHT_UNLOCKED = gameData.knightUnlocked
--- end
+local gameData = pd.datastore.read()
+if gameData then
+    CHEF_UNLOCKED = gameData.chefUnlocked
+    KNIGHT_UNLOCKED = gameData.knightUnlocked
+end
 
 SIGNAL_MANAGER = Signal()
 SCENE_MANAGER = SceneManager()
 
 import "scripts/title/titleScene"
 
-GAME_MUSIC = pd.sound.fileplayer.new("sound/game/Ludum Dare 38 - Track 4")
+GAME_MUSIC = pd.sound.sampleplayer.new("sound/game/Ludum Dare 38 - Track 4")
 
 local menu = pd.getSystemMenu()
 menu:addOptionsMenuItem("Music", {"low", "med", "high", "off"}, "med", function(value)

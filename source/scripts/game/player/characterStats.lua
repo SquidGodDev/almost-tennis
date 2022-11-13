@@ -16,7 +16,7 @@ CHARACTER_STATS = {
     chef = {
         maxHealth = 8,
         maxVelocity = 3.5,
-        hitVelocity = 6,
+        hitVelocity = 7,
         maxCharge = 50,
         imageTablePath = "images/player/theChef-table-32-56"
     }

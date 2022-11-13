@@ -9,6 +9,7 @@ local characterStats <const> = CHARACTER_STATS
 class('TitleScene').extends(gfx.sprite)
 
 function TitleScene:init()
+    CUR_LEVEL = 1
     local backgroundImage = gfx.image.new(400, 240, gfx.kColorBlack)
     gfx.sprite.setBackgroundDrawingCallback(
         function()
