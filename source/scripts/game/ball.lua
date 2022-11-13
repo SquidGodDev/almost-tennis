@@ -26,6 +26,12 @@ function Ball:init(x, y, fluid)
 
     self:setVisible(false)
     self.active = false
+
+    self.spawnSound = pd.sound.sampleplayer.new("sound/game/sand")
+    self.beepSound = pd.sound.sampleplayer.new("sound/game/beep")
+    self.racquetHitSound = pd.sound.sampleplayer.new("sound/game/racquetHit")
+    self.explosionSound = pd.sound.sampleplayer.new("sound/game/explosion")
+    self.waterDropSound = pd.sound.sampleplayer.new("sound/game/waterDrop")
 end
 
 function Ball:initEntities(player, enemy)
@@ -46,6 +52,7 @@ function Ball:hit(hitX, hitY, isEnemy, hitVelocity)
         return false
     end
 
+    self.racquetHitSound:play()
     local angleCos = (self.x - hitX) / (math.sqrt((self.x - hitX)^2 + (self.y - hitY)^2))
     local angleSin = math.sin(math.acos(angleCos))
     if isEnemy then
@@ -91,7 +98,9 @@ function Ball:update()
     if math.abs(self.y - 120) <= 5 and not self.crossedNet then
         self.crossedNet = true
         self.fluid:touch(self.x - 62, self.yVelocity)
-    else
+        -- self.waterDropSound:play()
+    end
+    if math.abs(self.y - 120) > 20 then
         self.crossedNet = false
     end
 
@@ -104,6 +113,7 @@ end
 
 function Ball:ballScored(playerScored)
     self:screenShake()
+    self.explosionSound:play()
     if playerScored then
         ScoreBurst(self.x, self.y + 2)
         self.enemy:damage()
@@ -143,6 +153,7 @@ function Ball:resetBall(spawnAtEnemySide)
         spawnY = 240 - ySpawnOffset
     end
     local spawnBurstSprite = util.animatedSprite("images/game/spawnBurst-table-93-96", 20, false)
+    self.spawnSound:play()
     spawnBurstSprite:setZIndex(2000)
     spawnBurstSprite:moveTo(randomX, spawnY)
     pd.timer.new(800, function()
@@ -151,10 +162,12 @@ function Ball:resetBall(spawnAtEnemySide)
         pd.timer.new(blinkTime, function()
             self:setVisible(false)
             pd.timer.new(blinkTime, function()
+                self.beepSound:play()
                 self:setVisible(true)
                 pd.timer.new(blinkTime, function()
                     self:setVisible(false)
                     pd.timer.new(blinkTime, function()
+                        self.beepSound:play()
                         self:setVisible(true)
                         self.active = true
                     end)

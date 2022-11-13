@@ -7,6 +7,7 @@ class('SceneManager').extends()
 function SceneManager:init()
     self.transitionTime = 700
     self.transitioning = false
+    self.medWhooshSound = pd.sound.sampleplayer.new("sound/title/mediumWhoosh")
 end
 
 function SceneManager:switchScene(scene, ...)
@@ -36,11 +37,13 @@ function SceneManager:cleanupScene()
 end
 
 function SceneManager:startTransition()
+    self.medWhooshSound:play()
     local transitionTimer = self:wipeTransition(0, 400)
 
     transitionTimer.timerEndedCallback = function()
         self:loadNewScene()
         transitionTimer = self:wipeTransition(400, 0)
+        self.medWhooshSound:play()
         transitionTimer.timerEndedCallback = function()
             self.transitioning = false
             self.transitionSprite:remove()

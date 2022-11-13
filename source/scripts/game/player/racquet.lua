@@ -22,6 +22,8 @@ function Racquet:init(x, y, entity, isEnemy, hitVelocity, hitVariance)
     self:addState("idle", 1, 120, {tickStep = 1, flip = self.flipped})
     self:addState("swing", 121, 144, {tickStep = 1, nextAnimation = "idle", flip = self.flipped})
 
+    self.superchargeHit = pd.sound.sampleplayer.new("sound/game/superchargeHit")
+
     local swingFrame = 122
     self.states["swing"].onFrameChangedEvent = function()
         if self:getCurrentFrameIndex() == swingFrame then
@@ -31,6 +33,9 @@ function Racquet:init(x, y, entity, isEnemy, hitVelocity, hitVariance)
                 xOffset, yOffset = -64, -14
             end
             Hitbox(self.x + xOffset, self.y + yOffset, hitboxWidth, hitboxHeight, self.entity, isEnemy, hitVelocity + self.bonusPower, hitVariance)
+            if self.bonusPower ~= 0 then
+                self.superchargeHit:play()
+            end
             self.bonusPower = 0
         end
     end
@@ -39,6 +44,8 @@ function Racquet:init(x, y, entity, isEnemy, hitVelocity, hitVariance)
     self:playAnimation()
 
     self.flipped = flipped
+
+    self.swingSound = pd.sound.sampleplayer.new("sound/game/intro/lightWhoosh")
 end
 
 function Racquet:update()
@@ -46,7 +53,10 @@ function Racquet:update()
 end
 
 function Racquet:swing()
-    self:changeState("swing")
+    if self.currentState ~= "swing" then
+        self.swingSound:play()
+        self:changeState("swing")
+    end
 end
 
 function Racquet:isSwinging()

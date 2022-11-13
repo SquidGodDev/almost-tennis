@@ -51,6 +51,11 @@ function PowerBar:init(maxCharge)
     self.barSprite:setCenter(0, 0)
     self.barSprite:moveTo(356, 149)
     self.barSprite:add()
+
+    self.powerupSound = pd.sound.sampleplayer.new("sound/game/powerup")
+    self.chargeSound = pd.sound.sampleplayer.new("sound/game/charge")
+    self.useChargeSound = pd.sound.sampleplayer.new("sound/game/useCharge")
+    self.powerupSoundPlayed = false
 end
 
 function PowerBar:update()
@@ -64,7 +69,10 @@ end
 
 function PowerBar:useCharge()
     if self.curCharge >= self.maxCharge then
-        self:updateCharge(-self.curCharge)
+        self.curCharge = 0
+        self:animateBar(self.curCharge)
+        self.powerupSoundPlayed = false
+        self.useChargeSound:play()
         self.powerBarWave:setVisible(false)
         self.bSprite:setVisible(false)
         return true
@@ -75,9 +83,16 @@ end
 function PowerBar:updateCharge(amount)
     self.curCharge += amount
     if self.curCharge >= self.maxCharge then
+        if not self.powerupSoundPlayed then
+            self.powerupSoundPlayed = true
+            self.powerupSound:play()
+            self.chargeSound:play()
+        end
         self.curCharge = self.maxCharge
         self.powerBarWave:setVisible(true)
         self.bSprite:setVisible(true)
+    else
+        self.chargeSound:play()
     end
     self:animateBar(self.curCharge)
 end

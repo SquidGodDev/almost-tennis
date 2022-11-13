@@ -27,10 +27,10 @@ function TitleScene:init()
     instructionSprite:add()
     instructionSprite:moveTo(200, 260)
     self.instructionAnimator = self:entranceAnimator(instructionSprite, 1500, 260, 215)
-    pd.timer.performAfterDelay(1500, function()
-        local blinkTimer = pd.timer.new(500)
-        blinkTimer.repeats = true
-        blinkTimer.timerEndedCallback = function()
+    self.blinkDelay = pd.timer.performAfterDelay(1500, function()
+        self.blinkTimer = pd.timer.new(500)
+        self.blinkTimer.repeats = true
+        self.blinkTimer.timerEndedCallback = function()
             instructionSprite:setVisible(not instructionSprite:isVisible())
         end
     end)
@@ -68,6 +68,14 @@ function TitleScene:init()
     self.scrollAnimator.timerEndedCallback = function(timer)
         self.scrollPosition = timer.endValue
     end
+
+    local almostTennisSound = pd.sound.sampleplayer.new("sound/title/almostTennis")
+    almostTennisSound:playAt(pd.sound.getCurrentTime() + .15)
+    self.lowWhooshSound = pd.sound.sampleplayer.new("sound/title/lowWhoosh")
+    self.lowWhooshSound:playAt(pd.sound.getCurrentTime() + .3)
+    self.medWhooshSound = pd.sound.sampleplayer.new("sound/title/mediumWhoosh")
+    self.confirmSound = pd.sound.sampleplayer.new("sound/title/confirm")
+    self.errorSound = pd.sound.sampleplayer.new("sound/title/error")
 end
 
 function TitleScene:update()
@@ -75,6 +83,7 @@ function TitleScene:update()
         if not self.characterSelection then
             self.characterSelection = true
             self:characterSelectAnimation()
+            self.medWhooshSound:play()
         else
             local selectedCharacter = self.characters[self.selectedIndex]
             local validSelection = true
@@ -85,10 +94,13 @@ function TitleScene:update()
             end
 
             if validSelection then
+                self.confirmSound:play()
                 SELECTED_CHARACTER = selectedCharacter
                 MAX_HEALTH = characterStats[selectedCharacter].maxHealth
                 CUR_HEALTH = MAX_HEALTH
                 SCENE_MANAGER:switchScene(GameScene)
+            else
+                self.errorSound:play()
             end
         end
     end
@@ -96,11 +108,13 @@ function TitleScene:update()
     if self.characterSelection then
         if pd.buttonJustPressed(pd.kButtonLeft) then
             if self.selectedIndex > 1 then
+                self.medWhooshSound:play()
                 self.selectedIndex -= 1
                 self:animateScroll(self.selectedIndex)
             end
         elseif pd.buttonJustPressed(pd.kButtonRight) then
             if self.selectedIndex < #self.characters then
+                self.medWhooshSound:play()
                 self.selectedIndex += 1
                 self:animateScroll(self.selectedIndex)
             end
@@ -132,12 +146,17 @@ end
 function TitleScene:characterSelectAnimation()
     self.titleAnimator:remove()
     self.instructionAnimator:remove()
+    self.blinkDelay:remove()
+    if self.blinkTimer then
+        self.blinkTimer:remove()
+    end
+    self.instructionSprite:setVisible(true)
     local titleAnimator = pd.timer.new(1000, 200, -200, pd.easingFunctions.inOutCubic)
     titleAnimator.updateCallback = function(timer)
         self.titleSprite:moveTo(timer.value, self.titleSprite.y)
         self.instructionSprite:moveTo(400 - timer.value, self.instructionSprite.y)
     end
-    local characterBannerAnimator = pd.timer.new(1000, self.characterBanner.y, -self.characterBanner.y, pd.easingFunctions.inOutCubic)
+    local characterBannerAnimator = pd.timer.new(700, self.characterBanner.y, -self.characterBanner.y, pd.easingFunctions.inOutCubic)
     characterBannerAnimator.updateCallback = function(timer)
         self.characterBanner:moveTo(self.characterBanner.x, timer.value)
     end

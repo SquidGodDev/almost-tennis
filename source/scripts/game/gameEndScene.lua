@@ -26,11 +26,16 @@ function GameEndScene:init()
     congratsAnimateTimer.updateCallback = function(timer)
         congratsSprite:moveTo(200, 120 + 5 * math.sin(timer.value))
     end
+    self.fireworksSound = pd.sound.sampleplayer.new("sound/game/fireworks")
+    self.fireworksSound:play(0)
+    local cheeringSound = pd.sound.sampleplayer.new("sound/game/cheering")
+    cheeringSound:play()
 end
 
 function GameEndScene:update()
     self:setImage(self.animationLoop:image())
     if pd.buttonJustPressed(pd.kButtonA) or pd.buttonJustPressed(pd.kButtonB) then
+        self.fireworksSound:stop()
         SCENE_MANAGER:switchScene(TitleScene)
     end
 end

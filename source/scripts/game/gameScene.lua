@@ -17,6 +17,9 @@ local enemyList <const> = ENEMY_LIST
 class('GameScene').extends(gfx.sprite)
 
 function GameScene:init()
+    if not GAME_MUSIC:isPlaying() then
+        GAME_MUSIC:play(0)
+    end
     gfx.setBackgroundColor(gfx.kColorBlack)
     local backgroundImage = gfx.image.new("images/game/background")
     gfx.sprite.setBackgroundDrawingCallback(
@@ -87,8 +90,12 @@ end
 function GameScene:createGameEndAnimation(win)
     local resultSashImage
     if win then
+        local victorySound = pd.sound.sampleplayer.new("sound/game/victory")
+        victorySound:playAt(pd.sound.getCurrentTime() + .2)
         resultSashImage = gfx.image.new("images/game/victorySash")
     else
+        local defeatSound = pd.sound.sampleplayer.new("sound/game/defeat")
+        defeatSound:playAt(pd.sound.getCurrentTime() + .2)
         resultSashImage = gfx.image.new("images/game/defeatSash")
     end
 
@@ -110,11 +117,13 @@ function GameScene:createGameEndAnimation(win)
                     CUR_HEALTH = MAX_HEALTH
                 end
                 if CUR_LEVEL > 10 then
+                    GAME_MUSIC:stop()
                     SCENE_MANAGER:switchScene(GameEndScene)
                 else
                     SCENE_MANAGER:switchScene(GameScene)
                 end
             else
+                GAME_MUSIC:stop()
                 SCENE_MANAGER:switchScene(TitleScene)
             end
         end)
@@ -136,6 +145,10 @@ function GameScene:createEntranceAnimation()
 
     local sashTimer = pd.timer.new(1000, -120, 120, pd.easingFunctions.inOutCubic)
     sashTimer.delay = 500
+    local metalDoorSlideSound = pd.sound.sampleplayer.new("sound/game/intro/metalDoorSliding")
+    pd.timer.performAfterDelay(500, function()
+        metalDoorSlideSound:play()
+    end)
     sashTimer.updateCallback = function(timer)
         sashSpriteLeft:moveTo(sashSpriteLeft.x, timer.value)
         sashSpriteRight:moveTo(sashSpriteRight.x, 240 - timer.value)
@@ -155,8 +168,12 @@ function GameScene:createEntranceAnimation()
     enemyImageSprite:moveTo(rightCenter, -100)
     enemyImageSprite:add()
 
+    local medLowWhooshSound1 = pd.sound.sampleplayer.new("sound/game/intro/medLowWhoosh")
     local imagesTimer = pd.timer.new(1500, -100, 80, pd.easingFunctions.inOutCubic)
     imagesTimer.delay = 1000
+    pd.timer.performAfterDelay(1500, function()
+        medLowWhooshSound1:play()
+    end)
     imagesTimer.updateCallback = function(timer)
         playerImageSprite:moveTo(playerImageSprite.x, timer.value)
         enemyImageSprite:moveTo(enemyImageSprite.x, timer.value)
@@ -176,6 +193,9 @@ function GameScene:createEntranceAnimation()
 
     local nameTimer = pd.timer.new(1500, 300, 180, pd.easingFunctions.inOutCubic)
     nameTimer.delay = 1200
+    pd.timer.performAfterDelay(1600, function()
+        -- medLowWhooshSound2:play()
+    end)
     nameTimer.updateCallback = function(timer)
         playerNameSprite:moveTo(playerNameSprite.x, timer.value)
         enemyNameSprite:moveTo(enemyNameSprite.x, timer.value)
@@ -194,6 +214,7 @@ function GameScene:createEntranceAnimation()
     vsSprite:setZIndex(3000)
     vsSprite:moveTo(200, -40)
 
+    local lightningSound = pd.sound.sampleplayer.new("sound/game/intro/lightning")
     local vsTimer = pd.timer.new(1000, -40, 120, pd.easingFunctions.inOutCubic)
     vsTimer.delay = 2000
     vsTimer.updateCallback = function(timer)
@@ -201,9 +222,11 @@ function GameScene:createEntranceAnimation()
     end
     vsTimer.timerEndedCallback = function()
         animationLoop.paused = false
+        lightningSound:play()
     end
 
     pd.timer.performAfterDelay(4000, function()
+        metalDoorSlideSound:play()
         local moveLeftTimer = pd.timer.new(1000, leftCenter, -100, pd.easingFunctions.inOutCubic)
         moveLeftTimer.updateCallback = function(timer)
             sashSpriteLeft:moveTo(timer.value, sashSpriteLeft.y)

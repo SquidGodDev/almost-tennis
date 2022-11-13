@@ -69,6 +69,8 @@ function Player:init(x, y)
     SIGNAL_MANAGER:subscribe("ballHit", self, function()
         self.powerBar:updateCharge(10)
     end)
+
+    self.superchargeActiveSound = pd.sound.sampleplayer.new("sound/game/superchargeActive")
 end
 
 function Player:update()
@@ -80,6 +82,7 @@ function Player:update()
     if pd.buttonJustPressed(pd.kButtonA) then
         self.racquet:swing()
         self.pulseRing:setVisible(false)
+        self.superchargeActiveSound:stop()
     end
 
     if not (self.currentState == "dash") then
@@ -133,6 +136,7 @@ function Player:update()
                 self:dashAbility()
             elseif SELECTED_CHARACTER == "knight" then
                 self.racquet:setBonusPower(self.bonusPower)
+                self.superchargeActiveSound:play(0)
                 self.pulseRing:setVisible(true)
             elseif SELECTED_CHARACTER == "chef" then
                 self.racquet:resetState()
