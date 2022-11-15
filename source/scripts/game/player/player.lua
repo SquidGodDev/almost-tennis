@@ -1,4 +1,5 @@
 import "libraries/AnimatedSprite"
+import "libraries/Shaker"
 import "scripts/game/player/racquet"
 import "scripts/game/healthbar/healthbar"
 import "scripts/game/player/characterStats"
@@ -71,15 +72,23 @@ function Player:init(x, y)
     end)
 
     self.superchargeActiveSound = pd.sound.sampleplayer.new("sound/game/superchargeActive")
+
+    self.shaker = SHAKER
+    SIGNAL_MANAGER:subscribe("playdateShook", self, function()
+        self:useAbility()
+    end)
 end
 
 function Player:update()
+    self.shaker:update()
+
     if self.currentState == "death" then
         self:updateAnimation()
         return
     end
 
-    if pd.buttonJustPressed(pd.kButtonA) then
+    local _, accelCrankChange = pd.getCrankChange()
+    if pd.buttonJustPressed(pd.kButtonA) or (math.abs(accelCrankChange) >= CRANK_SENSE) then
         self.racquet:swing()
         self.pulseRing:setVisible(false)
         self.superchargeActiveSound:stop()
@@ -130,19 +139,7 @@ function Player:update()
     end
 
     if pd.buttonJustPressed(pd.kButtonB) then
-        local chargeAvailable = self.powerBar:useCharge()
-        if chargeAvailable then
-            if SELECTED_CHARACTER == "contender" then
-                self:dashAbility()
-            elseif SELECTED_CHARACTER == "knight" then
-                self.racquet:setBonusPower(self.bonusPower)
-                self.superchargeActiveSound:play(0)
-                self.pulseRing:setVisible(true)
-            elseif SELECTED_CHARACTER == "chef" then
-                self.racquet:resetState()
-                self.spinBurstSprite.animationLoop = gfx.animation.loop.new(20, self.spinBurstImageTable, false)
-            end
-        end
+        self:useAbility()
     end
 
     if not self.racquet:isSwinging() then
@@ -194,4 +191,20 @@ function Player:dashAbility()
     end
     self.velocity = direction * self.dashSpeed
     self:changeState("dash")
+end
+
+function Player:useAbility()
+    local chargeAvailable = self.powerBar:useCharge()
+    if chargeAvailable then
+        if SELECTED_CHARACTER == "contender" then
+            self:dashAbility()
+        elseif SELECTED_CHARACTER == "knight" then
+            self.racquet:setBonusPower(self.bonusPower)
+            self.superchargeActiveSound:play(0)
+            self.pulseRing:setVisible(true)
+        elseif SELECTED_CHARACTER == "chef" then
+            self.racquet:resetState()
+            self.spinBurstSprite.animationLoop = gfx.animation.loop.new(20, self.spinBurstImageTable, false)
+        end
+    end
 end

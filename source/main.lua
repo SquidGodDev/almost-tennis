@@ -52,6 +52,41 @@ menu:addOptionsMenuItem("Music", {"low", "med", "high", "off"}, "med", function(
     end
 end)
 
+CRANK_SENSE = 10
+menu:addOptionsMenuItem("Crank Sens", {"low", "med", "hi"}, "med", function(value)
+    if value == "low" then
+        CRANK_SENSE = 15
+    elseif value == "med" then
+        CRANK_SENSE = 10
+    elseif value == "hi" then
+        CRANK_SENSE = 5
+    end
+end)
+
+
+SHAKER = Shaker.new(function()
+    if SHAKE_SENSE > 0 then
+        SIGNAL_MANAGER:notify("playdateShook")
+    end
+end, {sensitivity = Shaker.kSensitivityMedium, threshold = 0.4, samples = 20})
+SHAKER:setEnabled(true)
+
+SHAKE_SENSE = 0.4
+menu:addOptionsMenuItem("Shake Sens", {"low", "med", "hi", "off"}, "off", function(value)
+    if value == "low" then
+        SHAKE_SENSE = 0.3
+        SHAKER.threshold = SHAKE_SENSE
+    elseif value == "med" then
+        SHAKE_SENSE = 0.2
+        SHAKER.threshold = SHAKE_SENSE
+    elseif value == "high" then
+        SHAKE_SENSE = 0.1
+        SHAKER.threshold = SHAKE_SENSE
+    elseif value =="off" then
+        SHAKE_SENSE = 0
+    end
+end)
+
 TitleScene()
 
 function pd.update()

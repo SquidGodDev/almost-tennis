@@ -85,6 +85,8 @@ function GameScene:init()
 
 
     self:createEntranceAnimation()
+
+    pd.startAccelerometer()
 end
 
 function GameScene:createGameEndAnimation(win)
@@ -110,6 +112,7 @@ function GameScene:createGameEndAnimation(win)
     end
     resultSashTimer.timerEndedCallback = function()
         pd.timer.performAfterDelay(1000, function()
+            pd.stopAccelerometer()
             if win then
                 CUR_LEVEL += 1
                 CUR_HEALTH += 2
