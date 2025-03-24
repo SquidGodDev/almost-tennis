@@ -39,4 +39,4 @@ Source code for my action sports Playdate game, "Almost Tennis". Fight a gauntle
 - `main.lua` - Entry point for the game
 
 ## License
-All code is licensed under the terms of the MIT license except for `Fluid.lua`, `Shaker.lua`, and `Signal.lua` by Dustin Mierau.
+All code is licensed under the terms of the MIT license except for `Fluid.lua`, `Shaker.lua`, and `Signal.lua` by Dustin Mierau. Images/audio are also not included.
